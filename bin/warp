@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+require 'lazer'
+require 'json'
+
+digested = Lazer::Parser.digest("http://www.ubuntu.com/usn/rss.xml")
+
+digest_thirty_day_old = digested.select { |d|
+  d[:date] > Date.parse((Time.now-(86400*30)).to_s)
+}
+
+analyzer = Lazer::Analyzer
+analyzer.digests = digest_thirty_day_old
+puts JSON.dump(Lazer::Analyzer.is_threat)
